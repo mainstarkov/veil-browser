@@ -34,3 +34,13 @@ test("implements ephemeral session storage and honest iframe fallback", async ()
   assert.match(page, /depth-5/);
   assert.match(css, /prefers-reduced-motion:\s*reduce/);
 });
+
+test("ships a self-contained GitHub Pages frontend with working search", async () => {
+  const html = await readFile(new URL("pages/index.html", root), "utf8");
+  assert.match(html, /id="search-form"/);
+  assert.match(html, /https:\/\/duckduckgo\.com\/\?q=/);
+  assert.match(html, /window\.open\(url,"_blank","noopener,noreferrer"\)/);
+  assert.match(html, /sessionStorage\.setItem/);
+  assert.doesNotMatch(html, /<script[^>]+src=/);
+  assert.doesNotMatch(html, /<link[^>]+stylesheet/);
+});

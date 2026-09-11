@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#06090d">
+  <meta name="description" content="Veil Browser — прототип приватного браузера">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath fill='%2375f0bd' d='M32 2 56 13 50 48 32 62 14 48 8 13Z'/%3E%3Cpath d='m22 20 8 25h5l8-25h-6l-5 17-5-17Z'/%3E%3C/svg%3E">
+  <title>Veil Browser</title>
+  <style>
+    :root{--green:#75f0bd;--bg:#06090d;--panel:#10151b;--line:#253039;--ink:#e8eef1;--muted:#77838d;color-scheme:dark}
+    *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:Arial,Helvetica,sans-serif}button,input{font:inherit;color:inherit}button{cursor:pointer}:focus-visible{outline:2px solid var(--green);outline-offset:3px}
+    .shell{min-height:100vh;padding:24px;background:radial-gradient(circle at 50% 110%,rgba(45,220,157,.14),transparent 34%),#05070a}
+    .browser{min-height:calc(100vh - 48px);overflow:hidden;display:flex;flex-direction:column;border:1px solid rgba(117,240,189,.18);border-radius:14px;background:#0b0e12;box-shadow:0 35px 120px #000b}
+    .chrome{position:relative;z-index:20;background:#11151a;border-bottom:1px solid var(--line)}
+    .tabs-row{height:50px;display:flex;align-items:stretch;border-bottom:1px solid #ffffff0a}.brand{width:58px;display:grid;place-items:center}.mark{display:grid;place-items:center;width:22px;height:27px;color:#07110d;background:var(--green);font-weight:900;clip-path:polygon(50% 0,92% 18%,82% 77%,50% 100%,18% 77%,8% 18%)}
+    .tabs{display:flex;min-width:0;flex:1}.tab{width:210px;padding:0 12px;border:0;border-right:1px solid #ffffff08;background:transparent;display:flex;align-items:center;gap:9px;color:#8f9aa3}.tab.active{color:var(--ink);background:#20272e}.tab.private{color:#c1a2ff}.tab-title{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}.tab-close{margin-left:auto;padding:4px;border:0;background:none}.new-tab{width:48px;border:0;background:none;font-size:20px}
+    .window-actions{display:flex;align-items:center;gap:24px;padding:0 18px;color:#66717a;font-size:11px}.toolbar{height:58px;display:flex;align-items:center;gap:9px;padding:0 20px}.nav{display:flex;gap:4px}.icon-button{width:31px;height:31px;border:0;border-radius:7px;background:transparent;color:#68737c}.icon-button:hover{background:#1b2229;color:var(--ink)}
+    .address{height:38px;min-width:0;flex:1;display:flex;align-items:center;gap:10px;padding:0 13px;border:1px solid rgba(117,240,189,.18);border-radius:10px;background:#080c10}.address span{color:var(--green)}.address input{min-width:0;flex:1;border:0;outline:0;background:transparent;font-size:12px}.address input::placeholder{color:#69747e}.shield{color:var(--green)}
+    .viewport{position:relative;isolation:isolate;overflow:hidden;display:grid;flex:1;min-height:590px;background:#070a0e}.stars,.glow,.orbit,.grid{position:absolute;pointer-events:none}.stars{inset:0;opacity:.62;background-image:radial-gradient(circle,#ddfff39c 0 1px,transparent 1.4px),radial-gradient(circle,#75f0bd59 0 1px,transparent 1.2px);background-position:0 0,37px 51px;background-size:83px 83px,127px 127px;mask-image:linear-gradient(#000,transparent 82%)}
+    .glow{left:50%;top:45%;width:600px;height:390px;transform:translate(-50%,-50%);border-radius:50%;background:#28bf861f;filter:blur(90px);animation:pulse 9s ease-in-out infinite}.orbit{left:50%;top:49%;width:min(72vw,1040px);aspect-ratio:2.35;transform:translate(-50%,-50%) rotate(-7deg);border:1px solid #75f0bd18;border-radius:50%;box-shadow:inset 0 0 60px #75f0bd08}.orbit:before,.orbit:after{content:"";position:absolute;inset:12%;border:1px solid #75f0bd0d;border-radius:inherit}.orbit:after{inset:25%}.grid{left:-10%;right:-10%;bottom:-42%;height:72%;opacity:.23;background-image:linear-gradient(#75f0bd3d 1px,transparent 1px),linear-gradient(90deg,#75f0bd3d 1px,transparent 1px);background-size:54px 42px;transform:perspective(440px) rotateX(62deg);transform-origin:center top;mask-image:linear-gradient(#000,transparent 80%)}
+    .home{position:relative;z-index:5;width:min(870px,90%);margin:auto;padding:50px 20px;text-align:center}.session-note{width:max-content;max-width:100%;margin:0 auto 26px;padding:8px 13px;border:1px solid #75f0bd33;border-radius:999px;color:#9db7ab;background:#50967812;font-size:9px;letter-spacing:.11em;text-transform:uppercase}.session-note i,.status i{display:inline-block;width:6px;height:6px;margin-right:7px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green)}
+    .hero{display:flex;justify-content:center;align-items:center;gap:17px;animation:float 8s ease-in-out infinite}.hero .mark{width:58px;height:67px;font-size:26px}.hero h1{margin:0;font-size:clamp(52px,7vw,78px);line-height:1;letter-spacing:-.07em}.hero sup{align-self:flex-start;margin-top:9px;color:var(--green);font-size:9px}.search{width:min(680px,100%);height:61px;margin:32px auto 0;padding:0 17px;display:flex;align-items:center;gap:13px;border:1px solid #75f0bd33;border-radius:14px;background:#0f151bdb;box-shadow:0 20px 60px #0006;backdrop-filter:blur(18px)}.search:focus-within{border-color:#75f0bd85}.search span{color:var(--green);font-size:21px}.search input{min-width:0;flex:1;border:0;outline:0;background:transparent}.search input::placeholder{color:#69747e}.search kbd{padding:5px 8px;border:1px solid #303941;border-radius:5px;color:#65717b;background:#0c1014;font-size:9px}
+    .actions{margin-top:34px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.actions button{padding:17px;border:1px solid #ffffff16;border-radius:11px;text-align:left;background:linear-gradient(135deg,#131b22e0,#0b0f14bd);display:grid;grid-template-columns:30px 1fr;grid-template-rows:auto auto;gap:4px 9px}.actions button:hover{transform:translateY(-3px);border-color:#75f0bd59}.actions button>span{grid-row:1/3;color:var(--green);font-size:20px}.actions b{font-size:11px}.actions small{color:#5f6972;font-size:9px}.prototype{margin:24px 0 0;color:#526069;font-size:9px;letter-spacing:.13em;text-transform:uppercase}
+    .panel{position:absolute;z-index:30;top:0;right:0;width:min(390px,100%);height:100%;padding:25px;background:#0d1217f5;border-left:1px solid var(--line);box-shadow:-25px 0 80px #0008;backdrop-filter:blur(22px)}.panel-head{display:flex;justify-content:space-between;align-items:start}.panel-head span{color:var(--green);font-size:9px;letter-spacing:.14em}.panel h2{margin:7px 0 0}.panel-close{border:0;background:none;font-size:25px}.panel-content{margin-top:30px}.setting{width:100%;padding:14px 0;display:flex;align-items:center;justify-content:space-between;border:0;border-bottom:1px solid var(--line);text-align:left;background:none}.setting b,.setting small{display:block}.setting b{font-size:12px}.setting small{margin-top:5px;color:var(--muted);font-size:10px}.toggle{width:34px;height:18px;padding:2px;border-radius:20px;background:#253039}.toggle:after{content:"";display:block;width:14px;height:14px;border-radius:50%;background:#87929a}.toggle.on{background:#75f0bd40}.toggle.on:after{margin-left:16px;background:var(--green)}.history-item{padding:12px 0;border-bottom:1px solid var(--line);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#aab5bc;font-size:11px}.empty{color:var(--muted);font-size:12px}.clear{width:100%;margin-top:22px;padding:12px;border:1px solid var(--line);border-radius:9px;background:#141a20}
+    .status{position:relative;z-index:20;height:28px;padding:0 13px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);background:#0f1318;color:#515c65;font-size:8px;letter-spacing:.08em;text-transform:uppercase}.status span:first-child{color:#78998a}
+    @keyframes pulse{50%{opacity:.55;transform:translate(-50%,-54%) scale(1.08)}}@keyframes float{50%{transform:translateY(-7px)}}
+    @media(max-width:760px){.shell{padding:0}.browser{min-height:100vh;border:0;border-radius:0}.brand{width:42px}.tab{width:155px}.toolbar{padding:0 7px}.nav button:first-child{display:none}.home{padding-top:42px}.actions{grid-template-columns:1fr}.orbit{width:130vw}.grid{bottom:-20%}.status span:nth-child(2){display:none}}
+    @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="browser" aria-label="Браузер Veil">
+      <header class="chrome">
+        <div class="tabs-row">
+          <div class="brand"><span class="mark">V</span></div>
+          <div class="tabs" id="tabs" role="tablist"></div>
+          <button class="new-tab" id="new-tab" aria-label="Новая вкладка">+</button>
+          <div class="window-actions"><span>—</span><span>□</span><span>×</span></div>
+        </div>
+        <div class="toolbar">
+          <div class="nav"><button class="icon-button" aria-label="Назад">←</button><button class="icon-button" aria-label="Обновить">↻</button></div>
+          <form class="address" id="address-form"><span>◆</span><input id="address-input" aria-label="Адрес или поисковый запрос" placeholder="Введите адрес или поисковый запрос"></form>
+          <button class="icon-button shield" id="shield" aria-label="Панель защиты">◆</button>
+          <button class="icon-button" id="menu" aria-label="История">•••</button>
+        </div>
+      </header>
+      <section class="viewport">
+        <div class="stars"></div><div class="glow"></div><div class="orbit"></div><div class="grid"></div>
+        <div class="home">
+          <div class="session-note"><i></i> Следы исчезнут вместе с вкладкой</div>
+          <div class="hero"><span class="mark">V</span><h1>Veil</h1><sup>01</sup></div>
+          <form class="search" id="search-form"><span>⌕</span><input id="search-input" aria-label="Приватный поиск" placeholder="Куда идём?"><kbd>Enter</kbd></form>
+          <div class="actions">
+            <button id="private-tab"><span>◒</span><b>Уйти в инкогнито</b><small>Новая приватная вкладка</small></button>
+            <button id="open-shield"><span>◆</span><b>Открыть щит</b><small>Настройки этой сессии</small></button>
+            <button id="open-history"><span>◷</span><b>Проверить историю</b><small>Только эта вкладка</small></button>
+          </div>
+          <p class="prototype">Veil Browser · web preview</p>
+        </div>
+        <aside class="panel" id="panel" hidden></aside>
+      </section>
+      <footer class="status"><span><i></i> тихий режим</span><span>закройте вкладку — сессия исчезнет</span><span>Veil / web 01</span></footer>
+    </section>
+  </main>
+  <script>
+    const STORAGE_KEY="veil-pages-session-v1";
+    const defaultSettings={trackers:true,cookies:true,fingerprint:true,webrtc:true};
+    const makeTab=(privateTab=false)=>({id:crypto.randomUUID(),title:privateTab?"Приватная вкладка":"Новая вкладка",url:"veil://start",history:[],private:privateTab});
+    const fresh=()=>{const tab=makeTab();return{tabs:[tab],activeTabId:tab.id,settings:{...defaultSettings}}};
+    let state;
+    try{state=JSON.parse(sessionStorage.getItem(STORAGE_KEY))||fresh()}catch{state=fresh()}
+    if(!state.tabs?.length)state=fresh();
+    const save=()=>sessionStorage.setItem(STORAGE_KEY,JSON.stringify(state));
+    const active=()=>state.tabs.find(tab=>tab.id===state.activeTabId)||state.tabs[0];
+    const normalize=value=>{const text=value.trim();if(!text)return null;if(/^https?:\/\//i.test(text))return text;if(/^[\w-]+(\.[\w-]+)+(\/.*)?$/i.test(text))return`https://${text}`;return`https://duckduckgo.com/?q=${encodeURIComponent(text)}`};
+    const host=url=>{try{return new URL(url).hostname.replace(/^www\./,"")}catch{return"Новая вкладка"}};
+    function renderTabs(){document.querySelector("#tabs").innerHTML=state.tabs.map(tab=>`<button class="tab ${tab.id===state.activeTabId?"active":""} ${tab.private?"private":""}" data-id="${tab.id}" role="tab"><span>${tab.private?"◒":"●"}</span><span class="tab-title">${escapeHTML(tab.title)}</span><span class="tab-close" data-close="${tab.id}">×</span></button>`).join("");document.querySelector("#address-input").value=active().url==="veil://start"?"":active().url}
+    function escapeHTML(value){const node=document.createElement("span");node.textContent=value;return node.innerHTML}
+    function addTab(privateTab=false){const tab=makeTab(privateTab);state.tabs.push(tab);state.activeTabId=tab.id;save();renderTabs()}
+    function go(raw){const url=normalize(raw);if(!url)return;const tab=active();tab.url=url;tab.title=host(url);tab.history.push(url);save();renderTabs();window.open(url,"_blank","noopener,noreferrer")}
+    function showPanel(type){const panel=document.querySelector("#panel");panel.hidden=false;if(type==="history"){panel.innerHTML=`<div class="panel-head"><div><span>ЭТА СЕССИЯ</span><h2>История</h2></div><button class="panel-close">×</button></div><div class="panel-content">${active().history.length?active().history.map(url=>`<div class="history-item">${escapeHTML(url)}</div>`).join(""):"<p class=\"empty\">История пока пустая.</p>"}<button class="clear" id="clear-history">Очистить историю</button></div>`}else{const labels={trackers:["Трекеры","Блокировать рекламные маячки"],cookies:["Сторонние cookie","Изолировать данные сайтов"],fingerprint:["Отпечаток","Снижать уникальность браузера"],webrtc:["WebRTC","Не раскрывать локальный IP"]};panel.innerHTML=`<div class="panel-head"><div><span>ЩИТ VEIL</span><h2>Настройки</h2></div><button class="panel-close">×</button></div><div class="panel-content">${Object.entries(labels).map(([key,text])=>`<button class="setting" data-setting="${key}"><span><b>${text[0]}</b><small>${text[1]}</small></span><i class="toggle ${state.settings[key]?"on":""}"></i></button>`).join("")}</div>`}panel.querySelector(".panel-close").onclick=()=>panel.hidden=true;panel.querySelectorAll("[data-setting]").forEach(button=>button.onclick=()=>{const key=button.dataset.setting;state.settings[key]=!state.settings[key];save();showPanel("shield")});const clear=panel.querySelector("#clear-history");if(clear)clear.onclick=()=>{active().history=[];save();showPanel("history")}}
+    document.querySelector("#tabs").onclick=event=>{const close=event.target.closest("[data-close]");if(close){event.stopPropagation();state.tabs=state.tabs.filter(tab=>tab.id!==close.dataset.close);if(!state.tabs.length)state=fresh();else if(!state.tabs.some(tab=>tab.id===state.activeTabId))state.activeTabId=state.tabs.at(-1).id;save();renderTabs();return}const tab=event.target.closest("[data-id]");if(tab){state.activeTabId=tab.dataset.id;save();renderTabs()}};
+    document.querySelector("#new-tab").onclick=()=>addTab();document.querySelector("#private-tab").onclick=()=>addTab(true);document.querySelector("#shield").onclick=()=>showPanel("shield");document.querySelector("#open-shield").onclick=()=>showPanel("shield");document.querySelector("#menu").onclick=()=>showPanel("history");document.querySelector("#open-history").onclick=()=>showPanel("history");
+    document.querySelector("#search-form").onsubmit=event=>{event.preventDefault();go(document.querySelector("#search-input").value)};document.querySelector("#address-form").onsubmit=event=>{event.preventDefault();go(document.querySelector("#address-input").value)};
+    renderTabs();
+  </script>
+</body>
+</html>
