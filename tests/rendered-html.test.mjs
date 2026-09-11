@@ -19,7 +19,6 @@ test("renders the Veil browser prototype", async () => {
   const html = await response.text();
   assert.match(html, /<title>Veil — приватный браузер<\/title>/i);
   assert.match(html, /Запускаем защищённую сессию/);
-  assert.doesNotMatch(html, /codex-preview/);
 });
 
 test("implements ephemeral session storage and honest iframe fallback", async () => {

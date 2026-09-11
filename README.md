@@ -32,5 +32,3 @@ npm run dev
 ```bash
 npm test
 ```
-
-Подробный план находится в [`docs/plans/2026-09-11-veil-browser-prototype.md`](docs/plans/2026-09-11-veil-browser-prototype.md).
