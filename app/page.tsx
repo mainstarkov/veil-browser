@@ -192,8 +192,17 @@ export default function Home() {
   const sessionHistory = session.tabs.flatMap((tab) => tab.history).filter((url) => url !== "veil://start");
 
   return (
-    <main className={activeTab.private ? "browser-shell private" : "browser-shell"}>
-      <section className="browser-window" aria-label="Прототип браузера Veil">
+    <main
+      className={activeTab.private ? "browser-shell private" : "browser-shell"}
+      onPointerMove={(event) => {
+        if (window.matchMedia("(pointer: coarse)").matches) return;
+        const bounds = event.currentTarget.getBoundingClientRect();
+        event.currentTarget.style.setProperty("--pointer-x", `${(event.clientX / bounds.width - 0.5) * 2}`);
+        event.currentTarget.style.setProperty("--pointer-y", `${(event.clientY / bounds.height - 0.5) * 2}`);
+      }}
+    >
+      <a className="skip-link" href="#browser-content">Перейти к браузеру</a>
+      <section className="browser-window" aria-label="Браузер Veil">
         <header className="chrome">
           <div className="tabs-row">
             <div className="brand" aria-label="Veil Browser">
@@ -255,55 +264,72 @@ export default function Home() {
           </div>
         </header>
 
-        <section className="viewport">
+        <section className="viewport" id="browser-content">
+          <div className="cosmic-layer depth-0" aria-hidden="true">
+            <div className="starfield" />
+            <div className="horizon-grid" />
+          </div>
+          <div className="cosmic-layer depth-1" aria-hidden="true">
+            <div className="aurora aurora-one" />
+            <div className="aurora aurora-two" />
+          </div>
+          <div className="cosmic-layer depth-2" aria-hidden="true">
+            <div className="orbit orbit-wide"><i /><i /><i /></div>
+            <div className="signal-code signal-left">01001011</div>
+            <div className="signal-code signal-right">NO TRACE / 03</div>
+          </div>
+          <div className="cosmic-layer depth-5" aria-hidden="true">
+            <b className="particle particle-a" /><b className="particle particle-b" />
+            <b className="particle particle-c" /><b className="particle particle-d" />
+          </div>
           {activeTab.url === "veil://start" ? (
-            <div className="start-page">
-              <div className="session-pill"><i /> Временная сессия активна</div>
-              <div className="hero-brand"><span className="hero-mark">V</span><h1>Veil</h1></div>
-              <p className="hero-copy">Приватность — это стандарт,<br />а не дополнительная настройка.</p>
+            <div className="start-page depth-4">
+              <div className="session-pill"><i /> Следы исчезнут вместе с вкладкой</div>
+              <div className="hero-brand"><span className="hero-mark">V</span><h1>Veil</h1><sup>01</sup></div>
+              <p className="hero-copy"><span>Открыл. Нашёл. Закрыл.</span><br />Ничего не осталось.</p>
               <form className="hero-search" onSubmit={submitAddress}>
                 <span>⌕</span>
-                <input value={address} onChange={(event) => setAddress(event.target.value)} placeholder="Искать в интернете приватно" aria-label="Приватный поиск" />
+                <input value={address} onChange={(event) => setAddress(event.target.value)} placeholder="Куда идём?" aria-label="Приватный поиск" />
                 <kbd>Enter</kbd>
               </form>
               <div className="privacy-stats">
-                <article><strong>{session.blocked}</strong><span>трекеров заблокировано</span></article>
-                <article><strong>0</strong><span>данных сохранено</span></article>
-                <article><strong>3</strong><span>защитных узла</span></article>
+                <article><strong>{session.blocked}</strong><span>слежек остановлено</span></article>
+                <article><strong>0 Б</strong><span>останется после закрытия</span></article>
+                <article><strong>3×</strong><span>прыжка до сайта</span></article>
               </div>
               <div className="quick-actions">
-                <button onClick={() => addTab(true)}><span>◒</span><b>Приватная вкладка</b><small>Отдельный контекст</small></button>
-                <button onClick={() => setPanel("privacy")}><span>◆</span><b>Настроить защиту</b><small>4 уровня включено</small></button>
-                <button onClick={() => setPanel("history")}><span>◷</span><b>История сессии</b><small>Исчезнет при закрытии</small></button>
+                <button onClick={() => addTab(true)}><span>◒</span><b>Уйти в инкогнито</b><small>Чистый контекст, без хвостов</small></button>
+                <button onClick={() => setPanel("privacy")}><span>◆</span><b>Открыть щит</b><small>Посмотреть, что режем</small></button>
+                <button onClick={() => setPanel("history")}><span>◷</span><b>Проверить следы</b><small>Только эта сессия</small></button>
               </div>
-              <p className="prototype-note">UI-прототип · реальные сайты пока открываются в новой вкладке</p>
+              <p className="prototype-note">Первый контур · движок на подходе</p>
             </div>
           ) : (
             <div className="external-page">
               <div className="external-icon">↗</div>
-              <span className="eyebrow">Внешний сайт</span>
+              <span className="eyebrow">Выход наружу</span>
               <h2>{displayHost(activeTab.url)}</h2>
-              <p>Этот веб-прототип не может безопасно встроить страницу: сайты ограничивают загрузку через iframe.</p>
-              <a href={activeTab.url} target="_blank" rel="noreferrer">Открыть сайт в новой вкладке</a>
-              <button onClick={() => navigate("veil://start")}>Вернуться на стартовую</button>
+              <p>Здесь тесно для чужого сайта. Пока движок не встроен, откроем его рядом — без фокусов с iframe.</p>
+              <a href={activeTab.url} target="_blank" rel="noreferrer">Открыть рядом ↗</a>
+              <button onClick={() => navigate("veil://start")}>Остаться в Veil</button>
             </div>
           )}
 
           {panel && (
             <aside className="side-panel" aria-label={panel === "privacy" ? "Настройки защиты" : "История сессии"}>
               <div className="panel-heading">
-                <div><span>{panel === "privacy" ? "ЦЕНТР ЗАЩИТЫ" : "ТЕКУЩАЯ СЕССИЯ"}</span><h2>{panel === "privacy" ? "Защита активна" : "История"}</h2></div>
+                <div><span>{panel === "privacy" ? "ЩИТ VEIL" : "СЛЕДЫ ЭТОЙ ВКЛАДКИ"}</span><h2>{panel === "privacy" ? "Здесь тихо" : "Куда заходили"}</h2></div>
                 <button onClick={() => setPanel(null)} aria-label="Закрыть панель">×</button>
               </div>
               {panel === "privacy" ? (
                 <>
-                  <div className="protection-score"><strong>94</strong><div><b>Высокий уровень</b><span>Демонстрационные настройки</span></div></div>
+                  <div className="protection-score"><strong>94</strong><div><b>Шума почти нет</b><span>4 фильтра держат линию</span></div></div>
                   <div className="setting-list">
                     {([
-                      ["trackers", "Блокировка трекеров", "Не даёт следить между сайтами"],
-                      ["cookies", "Сторонние cookie", "Изолирует данные сайтов"],
-                      ["fingerprint", "Защита отпечатка", "Снижает уникальность браузера"],
-                      ["webrtc", "Защита WebRTC", "Скрывает локальные IP-адреса"],
+                      ["trackers", "Срезать маячки", "Рекламные сети теряют маршрут"],
+                      ["cookies", "Не кормить cookie", "Каждый сайт сидит в своей клетке"],
+                      ["fingerprint", "Смешаться с толпой", "Меньше уникальных признаков"],
+                      ["webrtc", "Не светить локальный IP", "WebRTC держим под замком"],
                     ] as [keyof PrivacySettings, string, string][]).map(([key, title, note]) => (
                       <button className="setting" key={key} onClick={() => toggleSetting(key)}>
                         <span><b>{title}</b><small>{note}</small></span>
@@ -311,17 +337,17 @@ export default function Home() {
                       </button>
                     ))}
                   </div>
-                  <p className="honesty-note">Важно: это UI-прототип. Настоящая защита появится только в приложении на Chromium.</p>
+                  <p className="honesty-note">Пока это интерфейсный прототип. Настоящие блокировки включим внутри Chromium — декорацию за защиту не выдаём.</p>
                 </>
               ) : (
                 <>
-                  <p className="history-note">Данные живут только до закрытия вкладки браузера.</p>
+                  <p className="history-note">Обновить страницу можно. Закроете вкладку — список исчезнет.</p>
                   <div className="history-list">
                     {sessionHistory.length ? [...sessionHistory].reverse().map((url, index) => (
                       <button key={`${url}-${index}`} onClick={() => navigate(url)}><span>◉</span><div><b>{displayHost(url)}</b><small>{url}</small></div></button>
-                    )) : <div className="empty-history">Здесь пока пусто</div>}
+                    )) : <div className="empty-history">Чисто. Вы ещё никуда не ходили.</div>}
                   </div>
-                  <button className="clear-session" onClick={clearSession}>Удалить данные сессии</button>
+                  <button className="clear-session" onClick={clearSession}>Стереть всё сейчас</button>
                 </>
               )}
             </aside>
@@ -329,9 +355,9 @@ export default function Home() {
         </section>
 
         <footer className="statusbar">
-          <span><i /> Защищено</span>
-          <span>Сессия удалится при закрытии вкладки</span>
-          <span>VEIL PROTOTYPE 0.1</span>
+          <span><i /> Тихий режим</span>
+          <span>Закроешь вкладку — сессия исчезнет</span>
+          <span>VEIL / BUILD 01</span>
         </footer>
       </section>
     </main>

@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Veil — приватный браузер",
-  description: "Интерактивный UI-прототип приватного браузера с временной сессией.",
+  description: "Veil — браузерная сессия без хвостов. Закрыл вкладку — следы исчезли.",
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",

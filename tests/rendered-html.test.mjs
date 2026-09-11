@@ -23,9 +23,15 @@ test("renders the Veil browser prototype", async () => {
 });
 
 test("implements ephemeral session storage and honest iframe fallback", async () => {
-  const page = await readFile(new URL("app/page.tsx", root), "utf8");
+  const [page, css] = await Promise.all([
+    readFile(new URL("app/page.tsx", root), "utf8"),
+    readFile(new URL("app/globals.css", root), "utf8"),
+  ]);
   assert.match(page, /sessionStorage\.setItem/);
   assert.match(page, /sessionStorage\.removeItem/);
-  assert.match(page, /не может безопасно встроить страницу/);
-  assert.match(page, /UI-прототип/);
+  assert.match(page, /без фокусов с iframe/);
+  assert.match(page, /декорацию за защиту не выдаём/);
+  assert.match(page, /depth-0/);
+  assert.match(page, /depth-5/);
+  assert.match(css, /prefers-reduced-motion:\s*reduce/);
 });
