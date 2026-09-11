@@ -27,6 +27,15 @@ npm run dev
 
 Затем откройте `http://localhost:3000`.
 
+### Go-бэкенд
+
+```bash
+cd backend
+go run ./cmd/server
+```
+
+API временных сессий запустится на `http://localhost:8080`. Структура и маршруты описаны в [`backend/README.md`](backend/README.md).
+
 ## Проверка
 
 ```bash
