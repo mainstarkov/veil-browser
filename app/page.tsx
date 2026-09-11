@@ -286,17 +286,11 @@ export default function Home() {
             <div className="start-page depth-4">
               <div className="session-pill"><i /> Следы исчезнут вместе с вкладкой</div>
               <div className="hero-brand"><span className="hero-mark">V</span><h1>Veil</h1><sup>01</sup></div>
-              <p className="hero-copy"><span>Открыл. Нашёл. Закрыл.</span><br />Ничего не осталось.</p>
               <form className="hero-search" onSubmit={submitAddress}>
                 <span>⌕</span>
                 <input value={address} onChange={(event) => setAddress(event.target.value)} placeholder="Куда идём?" aria-label="Приватный поиск" />
                 <kbd>Enter</kbd>
               </form>
-              <div className="privacy-stats">
-                <article><strong>{session.blocked}</strong><span>слежек остановлено</span></article>
-                <article><strong>0 Б</strong><span>останется после закрытия</span></article>
-                <article><strong>3×</strong><span>прыжка до сайта</span></article>
-              </div>
               <div className="quick-actions">
                 <button onClick={() => addTab(true)}><span>◒</span><b>Уйти в инкогнито</b><small>Чистый контекст, без хвостов</small></button>
                 <button onClick={() => setPanel("privacy")}><span>◆</span><b>Открыть щит</b><small>Посмотреть, что режем</small></button>
