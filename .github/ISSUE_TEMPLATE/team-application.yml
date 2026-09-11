@@ -1,0 +1,45 @@
+name: Заявка в команду
+description: Подайте заявку, если хотите участвовать в разработке Veil Browser
+title: "[Команда] "
+labels:
+  - team-application
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Спасибо за интерес к Veil Browser. Расскажите коротко о себе и о том, чем хотите заниматься в проекте.
+
+  - type: input
+    id: role
+    attributes:
+      label: Чем хотите заниматься?
+      placeholder: Например, интерфейс, frontend, тестирование или безопасность
+    validations:
+      required: true
+
+  - type: textarea
+    id: experience
+    attributes:
+      label: Опыт и примеры работ
+      description: Можно приложить ссылки на проекты или профиль GitHub.
+      placeholder: Коротко опишите опыт и добавьте ссылки, если они есть
+    validations:
+      required: true
+
+  - type: textarea
+    id: contribution
+    attributes:
+      label: Что хотите сделать в Veil Browser?
+      placeholder: Опишите первую задачу или идею
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: rules
+    attributes:
+      label: Правила
+      options:
+        - label: Я не буду публиковать пароли, токены и другие личные данные.
+          required: true
+        - label: Я согласен сначала обсуждать крупные изменения в Issues.
+          required: true

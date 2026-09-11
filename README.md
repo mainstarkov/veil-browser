@@ -32,3 +32,9 @@ npm run dev
 ```bash
 npm test
 ```
+
+## Присоединиться к команде
+
+Подать заявку можно через [форму в Issues](https://github.com/mainstarkov/veil-browser/issues/new?template=team-application.yml). После одобрения владелец проекта выдаст доступ к репозиторию.
+
+Правила участия находятся в [CONTRIBUTING.md](CONTRIBUTING.md).
